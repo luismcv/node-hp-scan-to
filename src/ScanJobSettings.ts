@@ -4,7 +4,7 @@ const util = require("util");
 
 export default class ScanJobSettings {
   private readonly inputSource: "Adf" | "Platen";
-  private readonly contentType: "Document" | "Photo";
+  public readonly contentType: "Document" | "Photo";
   private readonly isDuplex: boolean;
   private readonly resolution: number;
 

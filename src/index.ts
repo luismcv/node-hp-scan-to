@@ -285,14 +285,19 @@ async function executeScanJob(
       continue;
     }
 
+    let pageNumber = scanJobContent.elements.length + 1;
+    let newFilePattern = filePattern;
+    if (scanJobSettings.contentType == "Document"){
+	newFilePattern = filePattern + "_" + pageNumber;
+    }
     if (job.jobState === "Processing") {
       const page = await handleProcessingState(
         job,
         inputSource,
         folder,
         scanCount,
-        scanJobContent.elements.length + 1,
-        filePattern
+        pageNumber,
+        newFilePattern
       );
       job = await HPApi.getJob(jobUrl);
       if (page != null && job.jobState != "Canceled") {

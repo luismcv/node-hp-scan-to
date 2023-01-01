@@ -478,7 +478,8 @@ async function saveScan(
   tempFolder: string,
   scanCount: number,
   deviceCapabilities: DeviceCapabilities,
-  filePattern: string | undefined
+  filePattern: string | undefined,
+  resolution: number
 ): Promise<void> {
   if (event.compEventURI) {
     const proceedToScan = await waitScanRequest(event.compEventURI);
@@ -522,7 +523,8 @@ async function saveScan(
   const scanJobSettings = new ScanJobSettings(
     inputSource,
     contentType,
-    isDuplex
+    isDuplex,
+    resolution
   );
 
   const scanJobContent: ScanContent = { elements: [] };
@@ -605,7 +607,7 @@ type DirectoryConfig = {
 };
 
 let iteration = 0;
-async function init(directoryConfig: DirectoryConfig, suffix: string) {
+async function init(directoryConfig: DirectoryConfig, suffix: string, resolution: number) {
   // first make sure the device is reachable
   await HPApi.waitDeviceUp();
   let deviceUp = true;
@@ -644,7 +646,8 @@ async function init(directoryConfig: DirectoryConfig, suffix: string) {
         tempFolder,
         scanCount,
         deviceCapabilities,
-        directoryConfig.filePattern
+        directoryConfig.filePattern,
+	resolution
       );
     } catch (e) {
       if (await HPApi.isAlive()) {
@@ -714,6 +717,10 @@ async function main() {
     "Destination name suffix"
   );
   program.option(
+    "-r, --resolution <dpi>",
+    "Resolution in dpi"
+  );
+  program.option(
     "-d, --directory <dir>",
     "Directory where scans are saved (defaults to /tmp/scan-to-pc<random>)"
   );
@@ -745,7 +752,7 @@ async function main() {
     tempDirectory: program.opts().tempDirectory || getConfig("tempDirectory"),
     filePattern: program.opts().pattern || getConfig("pattern"),
   };
-  await init(directoryConfig, program.opts().suffix || "");
+  await init(directoryConfig, program.opts().suffix || "", program.opts().resolution || 200);
 }
 
 main();

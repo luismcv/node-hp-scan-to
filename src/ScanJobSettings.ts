@@ -6,15 +6,18 @@ export default class ScanJobSettings {
   private readonly inputSource: "Adf" | "Platen";
   private readonly contentType: "Document" | "Photo";
   private readonly isDuplex: boolean;
+  private readonly resolution: number;
 
   constructor(
     inputSource: "Adf" | "Platen",
     contentType: "Document" | "Photo",
-    isDuplex: boolean
+    isDuplex: boolean,
+    resolution: number
   ) {
     this.inputSource = inputSource;
     this.contentType = contentType;
     this.isDuplex = isDuplex;
+    this.resolution = resolution;
   }
 
   async toXML(): Promise<string> {
@@ -53,6 +56,8 @@ export default class ScanJobSettings {
       parsed.ScanSettings["AdfOptions"] = [{ AdfOption: ["Duplex"] }];
     }
     parsed.ScanSettings.ContentType[0] = this.contentType;
+    parsed.ScanSettings.XResolution[0] = this.resolution;
+    parsed.ScanSettings.YResolution[0] = this.resolution;
 
     let builder = new xml2js.Builder({
       xmldec: { version: "1.0", encoding: "UTF-8", standalone: false },

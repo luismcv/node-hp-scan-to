@@ -1,0 +1,11 @@
+[Unit]
+Description=HP Scan To (300 dpi duplex side B)
+
+[Service]
+User=hpscanto
+Group=hpscanto
+WorkingDirectory=/home/hpscanto/node-hp-scan-to
+ExecStart=/home/hpscanto/.nvm/versions/node/v18.12.1/bin/node dist/index.js -ip HP40472D -d /home/hpscanto/duplex-feed/ -p '"side_b"' --suffix _300_duplex_side_B -r 300
+
+[Install]
+WantedBy=multi-user.target

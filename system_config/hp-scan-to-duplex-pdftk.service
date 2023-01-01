@@ -1,0 +1,11 @@
+[Unit]
+Description=HP Scan To (duplex pdftk)
+
+[Service]
+User=hpscanto
+Group=hpscanto
+WorkingDirectory=/home/hpscanto/duplex-feed
+ExecStart=/home/hpscanto/duplex-feed/duplex-pdftk.sh
+
+[Install]
+WantedBy=multi-user.target

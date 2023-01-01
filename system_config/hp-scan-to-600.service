@@ -1,0 +1,11 @@
+[Unit]
+Description=HP Scan To (600 dpi)
+
+[Service]
+User=hpscanto
+Group=hpscanto
+WorkingDirectory=/home/hpscanto/node-hp-scan-to
+ExecStart=/home/hpscanto/.nvm/versions/node/v18.12.1/bin/node dist/index.js -ip HP40472D -d /mnt/paperless/consume/ -p '"scan"_yyyy-mm-dd_HH.MM.ss' --suffix _600 -r 600
+
+[Install]
+WantedBy=multi-user.target

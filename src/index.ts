@@ -70,8 +70,8 @@ async function waitPrinterUntilItIsReadyToUploadOrCompleted(
   return job;
 }
 
-async function registerWalkupScanToCompDestination(): Promise<string> {
-  const hostname = os.hostname();
+async function registerWalkupScanToCompDestination(suffix: string): Promise<string> {
+  const hostname = os.hostname() + suffix;
 
   const walkupScanDestinations = await HPApi.getWalkupScanToCompDestinations();
   const destinations = walkupScanDestinations.destinations;
@@ -100,8 +100,8 @@ async function registerWalkupScanToCompDestination(): Promise<string> {
 
   return resourceURI;
 }
-async function registerWalkupScanDestination(): Promise<string> {
-  const hostname = os.hostname();
+async function registerWalkupScanDestination(suffix: string): Promise<string> {
+  const hostname = os.hostname() + suffix;
 
   const walkupScanDestinations = await HPApi.getWalkupScanDestinations();
   const destinations = walkupScanDestinations.destinations;
@@ -605,7 +605,7 @@ type DirectoryConfig = {
 };
 
 let iteration = 0;
-async function init(directoryConfig: DirectoryConfig) {
+async function init(directoryConfig: DirectoryConfig, suffix: string) {
   // first make sure the device is reachable
   await HPApi.waitDeviceUp();
   let deviceUp = true;
@@ -628,9 +628,9 @@ async function init(directoryConfig: DirectoryConfig) {
     try {
       let resourceURI: string;
       if (deviceCapabilities.useWalkupScanToComp) {
-        resourceURI = await registerWalkupScanToCompDestination();
+        resourceURI = await registerWalkupScanToCompDestination(suffix);
       } else {
-        resourceURI = await registerWalkupScanDestination();
+        resourceURI = await registerWalkupScanDestination(suffix);
       }
 
       console.log("Waiting scan event for:", resourceURI);
@@ -710,6 +710,10 @@ async function main() {
     "Name of the printer for service discovery"
   ); // i.e. 'Deskjet 3520 series'
   program.option(
+    "-s, --suffix <suffix>",
+    "Destination name suffix"
+  );
+  program.option(
     "-d, --directory <dir>",
     "Directory where scans are saved (defaults to /tmp/scan-to-pc<random>)"
   );
@@ -741,7 +745,7 @@ async function main() {
     tempDirectory: program.opts().tempDirectory || getConfig("tempDirectory"),
     filePattern: program.opts().pattern || getConfig("pattern"),
   };
-  await init(directoryConfig);
+  await init(directoryConfig, program.opts().suffix || "");
 }
 
 main();
